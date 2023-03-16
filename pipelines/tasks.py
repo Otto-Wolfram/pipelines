@@ -1,3 +1,6 @@
+from pipelines.db import *
+
+
 class BaseTask:
     """Base Pipeline Task"""
 
@@ -23,6 +26,7 @@ class CopyToFile(BaseTask):
         return f'{self.table} -> {self.output_file}'
 
     def run(self):
+        save(self.output_file, self.table)
         print(f"Copy table `{self.table}` to file `{self.output_file}`")
 
 
@@ -37,6 +41,7 @@ class LoadFile(BaseTask):
         return f'{self.input_file} -> {self.table}'
 
     def run(self):
+        load(self.input_file, self.table)
         print(f"Load file `{self.input_file}` to table `{self.table}`")
 
 
@@ -52,6 +57,7 @@ class RunSQL(BaseTask):
 
     def run(self):
         print(f"Run SQL ({self.title}):\n{self.sql_query}")
+        sql(self.sql_query)
 
 
 
@@ -68,3 +74,4 @@ class CTAS(BaseTask):
 
     def run(self):
         print(f"Create table `{self.table}` as SELECT:\n{self.sql_query}")
+        create(self.table, self.sql_query)
