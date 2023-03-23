@@ -26,9 +26,7 @@ def save(file, table, connection_string='db.db'):
         cur = sqlite3.connect(connection_string).cursor()
         writer = csv.writer(file)
 
-        first_line = file.readline()
-        first_line.split(",")
-        writer.writerow(first_line.split(","))
+        writer.writerow(list(map(lambda x: x[0], cur.description)))
 
         data = cur.execute("SELECT * FROM " + table)
         writer.writerows(data)
