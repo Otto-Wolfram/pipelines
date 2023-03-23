@@ -4,8 +4,8 @@ import re
 import csv
 
 
-def load(file, table):
-    database = sqlite3.connect('db.db')
+def load(file, table, connection_string='db.db'):
+    database = sqlite3.connect(connection_string)
     pandas.read_csv(f'{file}').to_sql(name=table, con=database, if_exists='append', index=False)
 
 
@@ -15,22 +15,22 @@ def get_domain(url):
     return result
 
 
-def create(table, query):
-    database = sqlite3.connect('db.db')
+def create(table, query, connection_string='db.db'):
+    database = sqlite3.connect(connection_string)
     database.create_function("domain_of_url", 1, get_domain)
     database.execute("create table if not exists " + table + " as " + query)
 
 
-def save(file, table):
-    with open(f"{file}.csv", "w") as file:
-        cur = sqlite3.connect('db.db').cursor()
+def save(file, table, connection_string='db.db'):
+    with open(f"{file}.csv", "w", newline='') as file:
+        cur = sqlite3.connect(connection_string).cursor()
         writer = csv.writer(file)
-        writer.writerow(['id', 'name', 'url', 'domain_of_url'])
+        writer.writerow(['id', 'name', 'url', 'domain_of_url'])  # TODO: сделать универсально
         data = cur.execute("SELECT * FROM " + table)
         writer.writerows(data)
 
 
-def sql(query):
-    database = sqlite3.connect('db.db')
+def sql(query, connection_string='db.db'):
+    database = sqlite3.connect(connection_string)
     database.execute(query)
     database.commit()
